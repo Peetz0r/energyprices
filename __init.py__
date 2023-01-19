@@ -1,0 +1,100 @@
+import display, wifi, urequests, time, buttons
+
+SUPPLIERS = {
+  "": "Beurs / inkoop",
+  "ZP": "Zonneplan",
+  "EE": "EasyEnergy",
+  "TI": "Tibber",
+  "FR": "Frank Energie",
+  "AIP": "All In Power",
+  "EZ": "Energy Zero",
+  "ZG": "ZonderGas",
+  "NE": "NextEnergy",
+  "MDE": "Mijndomein Energie",
+  "GSL": "Groenestroom Lokaal",
+  "VON": "Vrij op naam",
+}
+
+SUPPLIER = ""
+
+data = None
+
+def btn_up(pressed):
+  global SUPPLIER, SUPPLIERS
+  if pressed:
+    SUPPLIER = sorted(SUPPLIERS)[(sorted(SUPPLIERS).index(SUPPLIER)-1) % len(SUPPLIERS)]
+    print(SUPPLIER, SUPPLIERS[SUPPLIER])
+    draw()
+
+def btn_down(pressed):
+  global SUPPLIER, SUPPLIERS
+  if pressed:
+    SUPPLIER = sorted(SUPPLIERS)[(sorted(SUPPLIERS).index(SUPPLIER)+1) % len(SUPPLIERS)]
+    print(SUPPLIER, SUPPLIERS[SUPPLIER])
+    draw()
+
+
+def main():
+  global data, current_hour
+  background()
+  display.drawText(52, 112, "Connecting", 0xffff00, "press_start_2p22")
+  display.flush()
+
+  wifi.connect()
+  wifi.wait()
+
+  background()
+  display.drawText(80, 112, "Loading", 0xffff00, "press_start_2p22")
+  display.flush()
+
+  current_hour = int(urequests.get("http://worldtimeapi.org/api/timezone/Europe/Amsterdam").json()['datetime'][11:13])
+
+  data = [urequests.get(f"https://enever.nl/feed/stroomprijs_{dag}.php").json() for dag in ["vandaag", "morgen"]]
+
+  draw()
+
+  buttons.attach(buttons.BTN_UP, btn_up)
+  buttons.attach(buttons.BTN_DOWN, btn_down)
+
+def background():
+  display.clearMatrix()
+  display.drawFill(0x000000)
+
+  # grid
+  for i in range(6):
+    display.drawRect(20, i*40 -20, 360, 40, False, 0x808080)
+
+  # cents labels
+  for i in range(6):
+    display.drawText(0, 212-(i*40), f"{i*10:2}", 0xffffff)
+
+  # hour labels
+  for i in range(9):
+    display.drawText(18 + i*36, 224, str(i*6 % 24), 0xffffff)
+
+  # supplier
+  display.drawText(24, 4, SUPPLIERS[SUPPLIER], 0xffff00)
+
+  display.flush()
+
+def draw():
+  global data, current_hour
+  background()
+  for dagnr, dag in enumerate(data):
+    for hour, price in enumerate(dag['data']):
+      print(dagnr, hour, price[f'prijs{SUPPLIER}'])
+      p = float(price[f'prijs{SUPPLIER}'])
+      if dagnr == 0 and current_hour == hour:
+        # yellow
+        c = 0xffff00
+      else:
+        # green-red gradient, berekend over prijs zonder belasting
+        c = int(float(price['prijs'])*1000)
+        c = (c << 16) + (0xff-c << 8)
+
+      display.drawRect(22 + dagnr*144 + hour*6, 220 - p*400, 5, p*400, True, c)
+  display.flush()
+
+# Start the main program.
+if not __name__ == "prices":
+ main()
