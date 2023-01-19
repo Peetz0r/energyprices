@@ -1,7 +1,7 @@
 import system, display, wifi, urequests, time, buttons, nvs, neopixel, machine, ntp
 
 SUPPLIERS = {
-  "": "Beurs / inkoop",
+  "": "entso-e",
   "ZP": "Zonneplan",
   "EE": "EasyEnergy",
   "TI": "Tibber",
