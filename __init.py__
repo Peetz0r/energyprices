@@ -1,4 +1,4 @@
-import display, wifi, urequests, time, buttons
+import system, display, wifi, urequests, time, buttons, nvs, neopixel, machine, ntp
 
 SUPPLIERS = {
   "": "Beurs / inkoop",
@@ -15,46 +15,70 @@ SUPPLIERS = {
   "VON": "Vrij op naam",
 }
 
-SUPPLIER = ""
-
+supplier = None
 data = None
+np = None
 
 def btn_up(pressed):
-  global SUPPLIER, SUPPLIERS
   if pressed:
-    SUPPLIER = sorted(SUPPLIERS)[(sorted(SUPPLIERS).index(SUPPLIER)-1) % len(SUPPLIERS)]
-    print(SUPPLIER, SUPPLIERS[SUPPLIER])
-    draw()
+    scroll(-1)
 
 def btn_down(pressed):
-  global SUPPLIER, SUPPLIERS
   if pressed:
-    SUPPLIER = sorted(SUPPLIERS)[(sorted(SUPPLIERS).index(SUPPLIER)+1) % len(SUPPLIERS)]
-    print(SUPPLIER, SUPPLIERS[SUPPLIER])
-    draw()
+    scroll(+1)
 
+def scroll(n):
+  global supplier, SUPPLIERS
+  supplier = sorted(SUPPLIERS)[(sorted(SUPPLIERS).index(supplier)+n) % len(SUPPLIERS)]
+  print(supplier, SUPPLIERS[supplier])
+  draw()
+  nvs.nvs_setstr("energyprices", "supplier", supplier)
+
+def btn_home(pressed):
+  if pressed:
+    display.drawText(28, 112, "Exiting", 0xffff00, "press_start_2p22")
+    display.flush()
+    system.home("foo")
 
 def main():
-  global data, current_hour
+  global supplier, data, current_hour, np
+
+  buttons.attach(buttons.BTN_HOME, btn_home)
+  buttons.attach(buttons.BTN_UP, btn_up)
+  buttons.attach(buttons.BTN_DOWN, btn_down)
+
+  supplier = nvs.nvs_getstr("energyprices", "supplier") or ""
+
+  np = neopixel.NeoPixel(machine.Pin(5, machine.Pin.OUT), 5)
+
   background()
-  display.drawText(52, 112, "Connecting", 0xffff00, "press_start_2p22")
+  display.drawText(28, 112, "Connecting", 0xffff00, "press_start_2p22")
   display.flush()
 
   wifi.connect()
   wifi.wait()
 
-  background()
-  display.drawText(80, 112, "Loading", 0xffff00, "press_start_2p22")
-  display.flush()
+  t = time.gmtime(ntp.get_NTP_time() - 946684800)
+  machine.RTC().init( t[0:3] + (0,) + t[3:6] + (0,) )
+  time.gmtime()
 
-  current_hour = int(urequests.get("http://worldtimeapi.org/api/timezone/Europe/Amsterdam").json()['datetime'][11:13])
 
-  data = [urequests.get(f"https://enever.nl/feed/stroomprijs_{dag}.php").json() for dag in ["vandaag", "morgen"]]
+  while True:
+    t = time.gmtime()
+    current_hour = t[3]
 
-  draw()
+    print(f"Loading (at {t})")
 
-  buttons.attach(buttons.BTN_UP, btn_up)
-  buttons.attach(buttons.BTN_DOWN, btn_down)
+    data = [urequests.get(f"https://enever.nl/feed/stroomprijs_{dag}.php").json() for dag in ["vandaag", "morgen"]]
+
+    t = time.gmtime()
+    print(f"Drawing (at {t})")
+    draw()
+    sleeping = (59-t[4])*60 + 59-t[5] + (60*3)
+    print(f"Sleeping {sleeping/60} minutes")
+    time.sleep(sleeping)
+
+
 
 def background():
   display.clearMatrix()
@@ -62,7 +86,7 @@ def background():
 
   # grid
   for i in range(6):
-    display.drawRect(20, i*40 -20, 360, 40, False, 0x808080)
+    display.drawRect(20, i*40 -20, 2*24*6 + 2, 40, False, 0x808080)
 
   # cents labels
   for i in range(6):
@@ -73,28 +97,26 @@ def background():
     display.drawText(18 + i*36, 224, str(i*6 % 24), 0xffffff)
 
   # supplier
-  display.drawText(24, 4, SUPPLIERS[SUPPLIER], 0xffff00)
-
-  display.flush()
+  display.drawText(24, 4, SUPPLIERS[supplier], 0xffff00)
 
 def draw():
-  global data, current_hour
+  global data, current_hour, np
   background()
   for dagnr, dag in enumerate(data):
     for hour, price in enumerate(dag['data']):
-      print(dagnr, hour, price[f'prijs{SUPPLIER}'])
-      p = float(price[f'prijs{SUPPLIER}'])
+      p = float(price[f'prijs{supplier}'])
+      c = int(float(price['prijs'])*1000)
       if dagnr == 0 and current_hour == hour:
         # yellow
         c = 0xffff00
+        for i in range(5):
+          np[i] = ((c >> 6), 4 - (c >> 6), 0)
       else:
-        # green-red gradient, berekend over prijs zonder belasting
-        c = int(float(price['prijs'])*1000)
         c = (c << 16) + (0xff-c << 8)
 
       display.drawRect(22 + dagnr*144 + hour*6, 220 - p*400, 5, p*400, True, c)
+  np.write()
   display.flush()
 
-# Start the main program.
-if not __name__ == "prices":
+if not __name__ == "energyprices":
  main()
