@@ -1,4 +1,4 @@
-import system, display, wifi, urequests, time, buttons, nvs, neopixel, machine, ntp
+import system, display, wifi, urequests, time, buttons, nvs, neopixel, machine
 
 SUPPLIERS = {
   "": "entso-e",
@@ -43,6 +43,8 @@ def btn_home(pressed):
 def main():
   global supplier, data, current_hour, np
 
+  print("Starting")
+
   buttons.attach(buttons.BTN_HOME, btn_home)
   buttons.attach(buttons.BTN_UP, btn_up)
   buttons.attach(buttons.BTN_DOWN, btn_down)
@@ -58,24 +60,29 @@ def main():
   wifi.connect()
   wifi.wait()
 
-  t = time.gmtime(ntp.get_NTP_time() - 946684800)
-  machine.RTC().init( t[0:3] + (0,) + t[3:6] + (0,) )
-  time.gmtime()
+  background()
+  display.drawText(28, 112, "Loading", 0xffff00, "press_start_2p22")
+  display.flush()
 
+  print("Getting and setting the RTC to local time (Europe/Amsterdam)")
+
+  t = urequests.get("http://worldtimeapi.org/api/timezone/Europe/Amsterdam").json()
+  t = time.gmtime(t['unixtime'] + t['raw_offset'] - 946684800)
+  machine.RTC().init( t[0:3] + (0,) + t[3:6] + (0,) )
 
   while True:
     t = time.gmtime()
     current_hour = t[3]
 
-    print(f"Loading (at {t})")
+    print(f"Loading at {t}")
 
     data = [urequests.get(f"https://enever.nl/feed/stroomprijs_{dag}.php").json() for dag in ["vandaag", "morgen"]]
+    draw()
 
     t = time.gmtime()
-    print(f"Drawing (at {t})")
-    draw()
-    sleeping = (59-t[4])*60 + 59-t[5] + (60*3)
-    print(f"Sleeping {sleeping/60} minutes")
+    # t[4] is minutes, t[5] is seconds, plus 5 second margin
+    sleeping = (59-t[4])*60 + 59-t[5] + 5
+    print(f"Sleeping for {int(sleeping / 60)}:{sleeping % 60:02} (mm:ss) starting at {t}")
     time.sleep(sleeping)
 
 
