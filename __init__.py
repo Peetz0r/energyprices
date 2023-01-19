@@ -32,7 +32,7 @@ def scroll(n):
   supplier = sorted(SUPPLIERS)[(sorted(SUPPLIERS).index(supplier)+n) % len(SUPPLIERS)]
   print(supplier, SUPPLIERS[supplier])
   draw()
-  nvs.nvs_setstr("energyprices", "supplier", supplier)
+  nvs.nvs_setstr("energy_prices", "supplier", supplier)
 
 def btn_home(pressed):
   if pressed:
@@ -49,7 +49,7 @@ def main():
   buttons.attach(buttons.BTN_UP, btn_up)
   buttons.attach(buttons.BTN_DOWN, btn_down)
 
-  supplier = nvs.nvs_getstr("energyprices", "supplier") or ""
+  supplier = nvs.nvs_getstr("energy_prices", "supplier") or ""
 
   np = neopixel.NeoPixel(machine.Pin(5, machine.Pin.OUT), 5)
 
@@ -125,5 +125,5 @@ def draw():
   np.write()
   display.flush()
 
-if not __name__ == "energyprices":
+if not __name__ == "energy_prices":
  main()
