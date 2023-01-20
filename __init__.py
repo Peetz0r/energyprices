@@ -1,4 +1,4 @@
-import system, display, wifi, urequests, time, buttons, nvs, neopixel, machine
+import display, wifi, urequests, time, buttons, nvs, neopixel, machine, mch22
 
 SUPPLIERS = {
   "": "entso-e",
@@ -38,7 +38,7 @@ def btn_home(pressed):
   if pressed:
     display.drawText(28, 112, "Exiting", 0xffff00, "press_start_2p22")
     display.flush()
-    system.home("foo")
+    mch22.exit_python()
 
 def main():
   global supplier, data, current_hour, np
