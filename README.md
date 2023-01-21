@@ -31,6 +31,6 @@ Data: https://enever.nl/prijzen-feeds/
 - Mijndomein Energie
 - NextEnergy
 - Tibber
-- Vrij op naam
+- Vrijopnaam
 - ZonderGas
 - Zonneplan

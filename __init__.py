@@ -10,7 +10,7 @@ SUPPLIERS = {
   "MDE": "Mijndomein Energie",
   "NE": "NextEnergy",
   "TI": "Tibber",
-  "VON": "Vrij op Naam",
+  "VON": "Vrijopnaam",
   "ZG": "ZonderGas",
   "ZP": "Zonneplan",
 }
@@ -80,7 +80,16 @@ def main():
   display.flush()
 
   wifi.connect()
-  wifi.wait()
+  if not wifi.wait():
+    background()
+    display.drawText(28,  68, "Could not", 0xffff00, "press_start_2p22")
+    display.drawText(28, 108, "connect to", 0xffff00, "press_start_2p22")
+    display.drawText(28, 148, "WiFi.", 0xffff00, "press_start_2p22")
+    display.flush()
+    buttons.attach(buttons.BTN_A, btn_home)
+    buttons.attach(buttons.BTN_B, btn_home)
+    # will drop the TTY in a repl, but practically will just end the program
+    return
 
   background()
   display.drawText(28, 108, "Loading.", 0xffff00, "press_start_2p22")
