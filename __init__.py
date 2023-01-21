@@ -155,9 +155,9 @@ def draw():
       c = int(float(price['prijs'])*1000)
       if dagnr == 0 and hour == current_hour:
         # yellow
-        c = 0xffff00
         for i in range(5):
-          np[i] = ((c >> 6), 4 - (c >> 6), 0)
+          np[i] = ((c >> 5), 7 - (c >> 5), 0)
+        c = 0xffff00
       else:
         c = (c << 16) + (0xff-c << 8)
 
@@ -172,6 +172,9 @@ def draw():
 
   p = float(data[int(selected_hour/24)]['data'][selected_hour%24][f'prijs{supplier}'])
   display.drawRect(22 + selected_hour*6, 216 - p*400, 5, p*400, True, 0xffff00)
+
+  c = int(float(data[int(selected_hour/24)]['data'][selected_hour%24][f'prijs'])*1000)
+  np[4] = ((c >> 5), 7 - (c >> 5), 0)
 
   display.drawLine(24 +  current_hour*6, 217, 24 +  current_hour*6, 225, 0xffff00)
   display.drawLine(24 + selected_hour*6, 217, 24 + selected_hour*6, 225, 0xffff00)
