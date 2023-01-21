@@ -24,16 +24,12 @@ def btn_down(pressed):
     scroll_supplier(+1)
 
 def btn_left(pressed):
-  global selected_hour, num_hours
   while buttons.value(buttons.BTN_LEFT):
-    selected_hour = (selected_hour-1) % num_hours
-    draw()
+    scroll_hour(-1)
 
 def btn_right(pressed):
-  global selected_hour, num_hours
   while buttons.value(buttons.BTN_RIGHT):
-    selected_hour = (selected_hour+1) % num_hours
-    draw()
+    scroll_hour(+1)
 
 def btn_press(pressed):
   global selected_hour, cheapest_hour
@@ -41,12 +37,20 @@ def btn_press(pressed):
     selected_hour = cheapest_hour
     draw()
 
+def scroll_hour(n):
+  global selected_hour, num_hours
+  selected_hour = (selected_hour+n) % num_hours
+  draw()
+  time.sleep_ms(100)
+
+
 def scroll_supplier(n):
   global supplier, SUPPLIERS
   supplier = sorted(SUPPLIERS)[(sorted(SUPPLIERS).index(supplier)+n) % len(SUPPLIERS)]
   print(supplier, SUPPLIERS[supplier])
   draw()
   nvs.nvs_setstr("energy_prices", "supplier", supplier)
+  time.sleep_ms(100)
 
 
 def btn_home(pressed):
