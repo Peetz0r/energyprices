@@ -41,7 +41,7 @@ def scroll_hour(n):
   global selected_hour, num_hours
   selected_hour = (selected_hour+n) % num_hours
   draw()
-  time.sleep_ms(100)
+  time.sleep_ms(50)
 
 
 def scroll_supplier(n):
@@ -50,7 +50,7 @@ def scroll_supplier(n):
   print(supplier, SUPPLIERS[supplier])
   draw()
   nvs.nvs_setstr("energy_prices", "supplier", supplier)
-  time.sleep_ms(100)
+  time.sleep_ms(50)
 
 
 def btn_home(pressed):
