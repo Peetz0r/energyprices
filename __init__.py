@@ -142,7 +142,7 @@ def background():
 
   # cents labels
   for i in range(6):
-    display.drawText(0, 212-(i*40), f"{i*10:2}", 0xffffff)
+    display.drawText(0, 208-(i*40), f"{i*10:2}", 0xffffff)
 
   # hour labels
   for i in range(9):
@@ -161,7 +161,7 @@ def draw():
     for hour, price in enumerate(dag['data']):
       hour += dagnr*24
       p = float(price[f'prijs{supplier}'])
-      c = int(float(price['prijs'])*1000)
+      c = min(255, int(float(price['prijs'])*1000))
       if dagnr == 0 and hour == current_hour:
         # yellow
         for i in range(5):
@@ -182,7 +182,7 @@ def draw():
   p = float(data[int(selected_hour/24)]['data'][selected_hour%24][f'prijs{supplier}'])
   display.drawRect(22 + selected_hour*6, 216 - p*400, 5, p*400, True, 0xffff00)
 
-  c = int(float(data[int(selected_hour/24)]['data'][selected_hour%24][f'prijs'])*1000)
+  c = min(255, int(float(data[int(selected_hour/24)]['data'][selected_hour%24][f'prijs'])*1000))
   np[4] = ((c >> 5), 7 - (c >> 5), 0)
 
   display.drawLine(24 +  current_hour*6, 217, 24 +  current_hour*6, 225, 0xffff00)
