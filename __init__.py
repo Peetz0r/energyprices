@@ -107,22 +107,21 @@ def main():
     print(f"Loading at {t}")
 
     selected_hour = None
-    data = [None, None]
+    data = []
 
     background()
     display.drawText(28, 108, "Loading..", 0xffff00, "press_start_2p22")
     display.flush()
 
-    data[0] = urequests.get(f"https://e.peetz0r.nl/{t[0]:04}-{t[1]:02}-{t[2]:02}.json").json()
-    display.drawText(28, 108, "Loading...", 0xffff00, "press_start_2p22")
-    display.flush()
+    for i in range(2):
+      t = time.gmtime(time.time() + i*24*3600)
+      r = urequests.get(f"https://e.peetz0r.nl/{t[0]:04}-{t[1]:02}-{t[2]:02}.json")
+      if r.status_code == 200:
+        data.append(r.json())
+      display.drawText(28, 108, f"Loading...{i*'.'}", 0xffff00, "press_start_2p22")
+      display.flush()
 
-    t2 = time.gmtime(time.time() + 24*3600)
-    data[1] = urequests.get(f"https://e.peetz0r.nl/{t2[0]:04}-{t2[1]:02}-{t2[2]:02}.json").json()
-    display.drawText(28, 108, "Loading....", 0xffff00, "press_start_2p22")
-    display.flush()
-
-    num_hours = sum([len(data[i]['data']) for i in range(2)])
+    num_hours = sum([len(i['data']) for i in data])
 
     draw()
 
