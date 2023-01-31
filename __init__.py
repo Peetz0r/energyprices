@@ -100,7 +100,6 @@ def main():
   t = urequests.get("http://worldtimeapi.org/api/timezone/Europe/Amsterdam").json()
   t = time.gmtime(t['unixtime'] + t['raw_offset'] - 946684800)
   machine.RTC().init( t[0:3] + (0,) + t[3:6] + (0,) )
-  # ~ machine.RTC().init((2023, 1, 20, 0, 19, 59, 30, 0))
 
   while True:
     t = time.gmtime()
@@ -114,11 +113,12 @@ def main():
     display.drawText(28, 108, "Loading..", 0xffff00, "press_start_2p22")
     display.flush()
 
-    data[0] = urequests.get("https://enever.nl/feed/stroomprijs_vandaag.php").json()
+    data[0] = urequests.get(f"https://e.peetz0r.nl/{t[0]:04}-{t[1]:02}-{t[2]:02}.json").json()
     display.drawText(28, 108, "Loading...", 0xffff00, "press_start_2p22")
     display.flush()
 
-    data[1] = urequests.get("https://enever.nl/feed/stroomprijs_morgen.php").json()
+    t2 = time.gmtime(time.time() + 24*3600)
+    data[1] = urequests.get(f"https://e.peetz0r.nl/{t2[0]:04}-{t2[1]:02}-{t2[2]:02}.json").json()
     display.drawText(28, 108, "Loading....", 0xffff00, "press_start_2p22")
     display.flush()
 
