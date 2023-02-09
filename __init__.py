@@ -115,9 +115,15 @@ def main():
 
     for i in range(2):
       t = time.gmtime(time.time() + i*24*3600)
-      r = urequests.get(f"https://e.peetz0r.nl/{t[0]:04}-{t[1]:02}-{t[2]:02}.json")
+      url = f"https://e.peetz0r.nl/{t[0]:04}-{t[1]:02}-{t[2]:02}.json"
+      print(f"Getting {url}", end='')
+      r = urequests.get(url)
+      print(f", HTTP {r.status_code}, {len(r.content):5} bytes", end='')
       if r.status_code == 200:
         data.append(r.json())
+        print(", parsed")
+      else:
+        print(", skipped")
       display.drawText(28, 108, f"Loading...{i*'.'}", 0xffff00, "press_start_2p22")
       display.flush()
 
