@@ -1,4 +1,4 @@
-import display, wifi, urequests, time, buttons, nvs, neopixel, machine, mch22
+import display, wifi, urequests, time, buttons, nvs, neopixel, machine, mch22, gc
 
 SUPPLIERS = {
   "": "entso-e",
@@ -114,6 +114,10 @@ def main():
     display.flush()
 
     for i in range(2):
+      # urequests.get() is very likely to run into memory issues,
+      # so we do a pre-emptive GC collect right before it
+      gc.collect()
+
       t = time.gmtime(time.time() + i*24*3600)
       url = f"https://e.peetz0r.nl/{t[0]:04}-{t[1]:02}-{t[2]:02}.json"
       print(f"Getting {url}", end='')
