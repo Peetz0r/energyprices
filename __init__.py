@@ -201,8 +201,12 @@ def draw():
   delay_hours = (selected_hour - current_hour)
   if delay_hours > 0:
     delay_hours = f"+{delay_hours}"
-  x = 304 - display.getTextWidth(str(delay_hours), "press_start_2p22")
-  display.drawText(x, 28, str(delay_hours), 0xffff00, "press_start_2p22")
+  x = 294 - display.getTextWidth(str(delay_hours), "press_start_2p22") * 2
+  y = 38
+  for i in range(-2, 3, 2):
+    for j in range(-2, 3, 2):
+      display.drawText(x + i, y + j, str(delay_hours), 0x000000, "press_start_2p22", 2, 2)
+  display.drawText(x, y, str(delay_hours), 0xffff00, "press_start_2p22", 2, 2)
 
   np.write()
   display.flush()
