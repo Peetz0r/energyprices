@@ -60,6 +60,9 @@ def btn_home(pressed):
     display.flush()
     mch22.exit_python()
 
+def df(t):
+  return f"{t[0]:04}-{t[1]:02}-{t[2]:02} {t[3]:02}:{t[4]:02}:{t[5]:02}"
+
 def main():
   global supplier, data, current_hour, selected_hour, cheapest_hour, np, num_hours
 
@@ -104,7 +107,7 @@ def main():
   while True:
     t = time.gmtime()
     current_hour = t[3]
-    print(f"Loading at {t}")
+    print(f"Loading at {df(t)}")
 
     selected_hour = None
     data = []
@@ -136,9 +139,9 @@ def main():
     draw()
 
     t = time.gmtime()
-    # t[4] is minutes, t[5] is seconds, plus 5 second margin
-    sleeping = (59-t[4])*60 + 59-t[5] + 5
-    print(f"Sleeping for {int(sleeping / 60)}:{sleeping % 60:02} (mm:ss) starting at {t}")
+    # t[4] is minutes, t[5] is seconds, plus 10 second margin
+    sleeping = (59-t[4])*60 + 59-t[5] + 10
+    print(f"Sleeping from {df(t)} until {df(time.gmtime(time.time() + sleeping))}")
     time.sleep(sleeping)
 
 def background():
