@@ -101,7 +101,7 @@ def main():
   print("Getting and setting the RTC to local time (Europe/Amsterdam)")
 
   t = urequests.get("http://worldtimeapi.org/api/timezone/Europe/Amsterdam").json()
-  t = time.gmtime(t['unixtime'] + t['raw_offset'] - 946684800)
+  t = time.gmtime(t['unixtime'] + t['raw_offset'] + t['dst_offset'] - 946684800)
   machine.RTC().init( t[0:3] + (0,) + t[3:6] + (0,) )
 
   while True:
@@ -135,6 +135,8 @@ def main():
       display.flush()
 
     num_hours = sum([len(i['data']) for i in data])
+
+    print(f"Got {len(data)} days of data with {[len(i['data']) for i in data]} hours")
 
     draw()
 
