@@ -185,7 +185,7 @@ def draw():
         c = (c << 16) + (0xff-c << 8)
 
       if hour > current_hour:
-        if price['prijs'] < data[int(cheapest_hour/24)]['data'][cheapest_hour%24]['prijs']:
+        if float(price['prijs']) < float(data[int(cheapest_hour/24)]['data'][cheapest_hour%24]['prijs']):
           cheapest_hour = hour
 
       display.drawRect(22 + hour*6, 216 - p*400, 5, p*400, True, c)
