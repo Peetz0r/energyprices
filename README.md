@@ -23,14 +23,25 @@ Data: https://enever.nl/prijzen-feeds/
 ## Suppliers
 
 - entso-e (bare price without energy tax, mark-up or vat)
+- Atoom Alliantie
 - All In Power
+- ANWB Energie
+- Budget Energie
 - EasyEnergy
+- Eneco
+- Energie VanOns
 - Energy Zero
 - Frank Energie
 - Groenestroom Lokaal
 - Mijndomein Energie
 - NextEnergy
 - Tibber
+- Vandebron
 - Vrijopnaam
+- Wout Energie
 - ZonderGas
 - Zonneplan
+
+List of suppliers last updated: 2024-02-26
+
+If any suppliers are missing, poke me at energyprices-badge-app@peetz0r.nl or via any other known communication channel

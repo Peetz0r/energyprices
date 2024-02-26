@@ -2,15 +2,22 @@ import display, wifi, urequests, time, buttons, nvs, neopixel, machine, mch22, g
 
 SUPPLIERS = {
   "": "entso-e",
+  "AA": "Atoom Alliantie",
   "AIP": "All In Power",
+  "ANWB": "ANWB Energie",
+  "BE": "Budget Energie",
   "EE": "EasyEnergy",
+  "EN": "Eneco",
+  "EVO": "Energie VanOns",
   "EZ": "Energy Zero",
   "FR": "Frank Energie",
   "GSL": "Groenestroom Lokaal",
   "MDE": "Mijndomein Energie",
   "NE": "NextEnergy",
   "TI": "Tibber",
+  "VDB": "Vandebron",
   "VON": "Vrijopnaam",
+  "WE": "Wout Energie",
   "ZG": "ZonderGas",
   "ZP": "Zonneplan",
 }
