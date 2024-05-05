@@ -42,6 +42,6 @@ Data: https://enever.nl/prijzen-feeds/
 - ZonderGas
 - Zonneplan
 
-List of suppliers last updated: 2024-02-26
+List of suppliers last updated: 2024-05-05
 
 If any suppliers are missing, poke me at energyprices-badge-app@peetz0r.nl or via any other known communication channel

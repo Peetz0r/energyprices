@@ -114,7 +114,7 @@ def main():
   while True:
     t = time.gmtime()
     current_hour = t[3]
-    print(f"Loading at {df(t)}")
+    print(f"\nLoading at {df(t)}")
 
     selected_hour = None
     data = []
@@ -124,15 +124,32 @@ def main():
     display.flush()
 
     for i in range(2):
-      # urequests.get() is very likely to run into memory issues,
-      # so we do a pre-emptive GC collect right before it
-      gc.collect()
 
       t = time.gmtime(time.time() + i*24*3600)
       url = f"https://e.peetz0r.nl/{t[0]:04}-{t[1]:02}-{t[2]:02}.json"
-      print(f"Getting {url}", end='')
-      r = urequests.get(url)
-      print(f", HTTP {r.status_code}, {len(r.content):5} bytes", end='')
+      print(f"Getting {url}")
+
+      retry = 0
+      while retry < 5:
+        try:
+          retry += 1
+          print(f"Attempt {retry}")
+          # urequests.get() is very likely to run into memory issues,
+          # so we do a pre-emptive GC collect right before it
+          gc.collect()
+          r = urequests.get(url)
+          break
+        except OSError as e:
+          print(' - [!!] - Exception - [!!] -')
+          print(e)
+
+          background()
+          display.drawText(28, 108, f"Retry {retry}", 0xffff00, "press_start_2p22")
+          display.flush()
+
+          time.sleep(2)
+
+      print(f"HTTP {r.status_code}, {len(r.content):5} bytes", end='')
       if r.status_code == 200:
         data.append(r.json())
         print(", parsed")
@@ -150,7 +167,7 @@ def main():
     t = time.gmtime()
     # t[4] is minutes, t[5] is seconds, plus 10 second margin
     sleeping = (59-t[4])*60 + 59-t[5] + 10
-    print(f"Sleeping from {df(t)} until {df(time.gmtime(time.time() + sleeping))}")
+    print(f"Sleeping from {df(t)} until {df(time.gmtime(time.time() + sleeping))}\n")
     time.sleep(sleeping)
 
 def background():
