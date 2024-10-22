@@ -44,4 +44,6 @@ Data: https://enever.nl/prijzen-feeds/
 
 List of suppliers last updated: 2024-05-05
 
+List of suppliers last checked: 2024-10-22
+
 If any suppliers are missing, poke me at energyprices-badge-app@peetz0r.nl or via any other known communication channel

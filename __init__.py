@@ -107,8 +107,12 @@ def main():
 
   print("Getting and setting the RTC to local time (Europe/Amsterdam)")
 
-  t = urequests.get("http://worldtimeapi.org/api/timezone/Europe/Amsterdam").json()
-  t = time.gmtime(t['unixtime'] + t['raw_offset'] + t['dst_offset'] - 946684800)
+  # https://e.peetz0r.nl/t runs the script timeserv.py
+  # on a server with python >= 3.9 and complete tzdata
+  t = int(urequests.get("https://e.peetz0r.nl/t").text)
+  t = time.gmtime(t)
+
+  # the order of fields is weird and doesn't match the documentation
   machine.RTC().init( t[0:3] + (0,) + t[3:6] + (0,) )
 
   while True:
